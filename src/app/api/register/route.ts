@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import {
-  API_PATH,
+  API_URL,
   COOKIE_NAME,
   SESION_DURATION,
   SESION_DURATION_MINUTES,
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     name: COOKIE_NAME,
     value: token,
     httpOnly: true,
-    path: API_PATH,
+    path: API_URL,
     expires: new Date(Date.now() + SESION_DURATION),
   });
 
