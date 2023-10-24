@@ -26,6 +26,7 @@ export default function Home() {
   const { categories, isLoading } = useCategories();
   const [search, setSearch] = useState<string>("");
   const [request, setRequest] = useState<string>("");
+  const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (search) {
@@ -37,12 +38,20 @@ export default function Home() {
 
   return (
     <>
-      <NavBar setSearch={setSearch} />
+      <div
+        onClick={() => setMenuIsOpen(false)}
+        className={` ${
+          menuIsOpen ? "opacity-50 z-30" : "opacity-0 -z-30"
+        } fixed h-screen w-screen bg-red-950 blur-md transition-opacity`}
+      ></div>
+      <NavBar setSearch={setSearch} setMenuIsOpen={setMenuIsOpen} />
       <div className=" flex mt-5 ml-3 gap-5 p-5">
         <Aside
           setRequest={setRequest}
           categories={categories}
           isLoading={isLoading}
+          menuIsOpen={menuIsOpen}
+          setMenuIsOpen={setMenuIsOpen}
         />
         <Products request={request} />
       </div>

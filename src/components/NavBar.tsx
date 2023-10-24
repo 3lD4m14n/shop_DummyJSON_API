@@ -12,10 +12,11 @@ import { API_CHECK_SESSION } from "@/constants";
 interface NavBarProps {
   height?: number;
   setSearch?: React.Dispatch<React.SetStateAction<string>>;
-  productsInCart?: number;
+  categories?: string[];
+  setMenuIsOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-function useSessionCheck(): sessionResponse & { isLoading: boolean } {
+function useSessionCheck(): { session: sessionResponse; isLoading: boolean } {
   const { data, isLoading } = useSWR(API_CHECK_SESSION, async (key) => {
     return fetch(key).then((res) => res.json());
   });
@@ -26,73 +27,91 @@ function useSessionCheck(): sessionResponse & { isLoading: boolean } {
   };
 }
 
-export default function NavBar({ height = 50, setSearch }: NavBarProps) {
+export default function NavBar({
+  height = 50,
+  setSearch,
+  setMenuIsOpen,
+}: NavBarProps) {
   const componentsHeight = height / 1.5;
   const { session, isLoading } = useSessionCheck();
 
   return (
-    <nav style={{ height: height }} className="bg-red-500 w-full px-2">
-      <ul className=" w-full h-full flex flex-row justify-between">
-        <li className=" flex justify-center items-center rounded-full hover:bg-red-400">
-          <Image
-            src={MenuIcon}
-            alt="Menu"
-            className=" lg:hidden"
-            width={height}
-            height={height}
-          />
-          <Link href="/" className=" w-full h-full">
-            <Image
-              src={Logo}
-              alt="Logo"
-              className=" hidden lg:block"
-              width={height}
-              height={height}
-            />
-          </Link>
-        </li>
-        {setSearch ? (
-          <li className=" flex justify-center items-center">
-            <input
-              type="text"
-              name="search"
-              id="search"
-              placeholder="Product"
-              onChange={(e) => setSearch(e.target.value)}
-              style={{ height: componentsHeight }}
-              className={` hidden text-zinc-950 text-center w-[400px] lg:block rounded-l-md border-black border-y-2 border-l-2`}
-            />
-
-            <Image
-              src={SearchIcon}
-              alt="Search"
-              width={componentsHeight - 2}
-              height={componentsHeight - 2}
-              className=" border-black rounded-r-md border-y-2 border-r-2"
-            />
+    <>
+      <nav style={{ height: height }} className="bg-red-500 w-full px-2 z-50">
+        <ul className=" w-full h-full flex flex-row justify-between">
+          <li className=" flex justify-center items-center rounded-full hover:bg-red-400">
+            {setMenuIsOpen && (
+              <button
+                onClick={() => setMenuIsOpen(true)}
+                className=" h-full w-[50px] flex justify-center items-center"
+              >
+                <Image
+                  src={MenuIcon}
+                  alt="Menu"
+                  className="md:hidden"
+                  width={height}
+                  height={height}
+                />
+              </button>
+            )}
+            <Link
+              href="/"
+              className={` ${
+                setMenuIsOpen ? "hidden" : ""
+              } md:block w-full h-full`}
+            >
+              <Image src={Logo} alt="Logo" width={height} height={height} />
+            </Link>
           </li>
-        ) : null}
-        <li>
-          {isLoading ? (
-            <Spinner />
-          ) : session ? (
-            <Link
-              href="/cart"
-              className=" relative flex justify-center items-center h-full w-full rounded-xl p-3 hover:bg-red-400"
-            >
-              <h3 className=" hidden lg:block text-lg w-min">Your Cart</h3>
-              <Image src={CartIcon} alt="Cart" width={height} height={height} />
-            </Link>
-          ) : (
-            <Link
-              href={"/login"}
-              className=" flex justify-center items-center h-full w-full rounded-xl p-3 hover:bg-red-400"
-            >
-              LogIn
-            </Link>
-          )}
-        </li>
-      </ul>
-    </nav>
+          {setSearch ? (
+            <li className=" flex justify-center items-center">
+              <input
+                type="text"
+                name="search"
+                id="search"
+                placeholder="Product"
+                onChange={(e) => setSearch(e.target.value)}
+                style={{ height: componentsHeight }}
+                className={` -z-10 absolute w-[90%] text-red-950 text-center md:w-[400px] md:-z-0 md:static rounded-md md:rounded-r-none border-red-950 border-2 md:border-r-0 focus:translate-y-[50px] md:focus:translate-y-0 transition-transform`}
+              />
+              <a href="#search">
+                <Image
+                  src={SearchIcon}
+                  alt="Search"
+                  width={componentsHeight}
+                  height={componentsHeight}
+                  className=" border-red-950 bg-red-50 rounded-full md:rounded-md md:rounded-l-none border-2"
+                />
+              </a>
+            </li>
+          ) : null}
+          <li>
+            {isLoading ? (
+              <Spinner />
+            ) : session.session ? (
+              <Link
+                href="/cart"
+                className=" relative flex justify-center items-center h-full w-full rounded-xl p-3 hover:bg-red-400"
+              >
+                <h3 className=" hidden lg:block text-lg w-min">Your Cart</h3>
+                <Image
+                  src={CartIcon}
+                  alt="Cart"
+                  width={height}
+                  height={height}
+                />
+              </Link>
+            ) : (
+              <Link
+                href={"/login"}
+                className=" flex justify-center items-center h-full w-full rounded-xl p-3 hover:bg-red-400"
+              >
+                LogIn
+              </Link>
+            )}
+          </li>
+        </ul>
+      </nav>
+    </>
   );
 }

@@ -8,7 +8,7 @@ import { MessageInfo } from "@/types";
 import Image from "next/image";
 import { API_ADD_TO_CART, API_PRODUCTS } from "@/constants";
 import Link from "next/link";
-import { json } from "stream/consumers";
+import { useRouter } from "next/navigation";
 
 interface Product {
   id: number;
@@ -37,7 +37,8 @@ function useProduct(id: string): ResponseState {
 
 async function handleAddToCart(
   id: string,
-  setMessage: React.Dispatch<React.SetStateAction<MessageInfo | null>>
+  setMessage: React.Dispatch<React.SetStateAction<MessageInfo | null>>,
+  push: (url: string) => void
 ) {
   console.log(id);
 
@@ -60,6 +61,8 @@ async function handleAddToCart(
       type: "error",
       message: "Something went wrong",
     });
+
+    push("/login");
   }
 }
 
@@ -70,30 +73,31 @@ export default function ProductView({
 }) {
   const { product, isLoading } = useProduct(params.id);
   const [message, setMessage] = useState<MessageInfo | null>(null);
+  const { push } = useRouter();
 
   return (
     <>
       <NavBar />
       {message && <Messsage {...message} setMessage={setMessage} />}
-      <div className=" flex flex-col items-center mt-5 w-full h-screen">
+      <div className=" flex flex-col items-center w-full h-screen">
         {isLoading ? (
           <Spinner />
         ) : (
           <>
-            <div className=" flex justify-around w-full ">
+            <div className=" flex justify-between w-full text-xl font-bold">
               <Link
                 href={"/"}
-                className=" p-1 border-zinc-900 border-2 rounded-y-3xl rounded-l-3xl bg-orange-500 uppercase hover:bg-orange-400 transition-colors before:content-['←']"
+                className=" p-1 border-zinc-900 border-2 rounded-y-3xl rounded-bl-3xl bg-orange-500 uppercase hover:bg-orange-400 transition-colors before:content-['←']"
               >
                 Back
               </Link>
-              <div className=" flex p-1 bg-zinc-900 border-zinc-900 gap-1 rounded-3xl">
-                <span className=" after:content-['$'] bg-white h-full rounded-y-3xl rounded-l-3xl p-1">
+              <div className=" flex p-1 bg-zinc-900 border-zinc-900 gap-1 rounded-b-3xl">
+                <span className=" after:content-['$'] bg-white h-full rounded-bl-3xl p-1">
                   {product.price}
                 </span>
                 <button
-                  onClick={() => handleAddToCart(params.id, setMessage)}
-                  className=" bg-green-500 hover:bg-green-400 transition-colors h-full rounded-y-3xl rounded-r-3xl p-1 whitespace-nowrap uppercase"
+                  onClick={() => handleAddToCart(params.id, setMessage, push)}
+                  className=" bg-green-500 hover:bg-green-400 transition-colors h-full rounded-y-3xl rounded-br-3xl p-1 whitespace-nowrap uppercase"
                 >
                   Add to cart
                 </button>
