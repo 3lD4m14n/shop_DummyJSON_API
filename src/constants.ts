@@ -1,5 +1,4 @@
-export const API_PATH = "/api";
-export const API_URL = `http://localhost:3000${API_PATH}`;
+export const API_URL = "/api";
 
 export const API_CATEGORIES = `${API_URL}/categories`;
 export const API_PRODUCTS = `${API_URL}/products`;
