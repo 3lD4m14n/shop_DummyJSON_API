@@ -3,10 +3,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Spinner from "./Spinner/Spinner";
-import { API_URL } from "@/constants";
 
 interface productsProps {
-  search: string;
+  request: string;
 }
 
 interface SearchResponse {
@@ -49,8 +48,8 @@ function ProductCard(props: ProductCardProps) {
             className=" object-scale-down rounded-lg w-full h-full"
           />
         </div>
-        <h3 className=" text-center">{props.title}</h3>
-        <span className=" after:content-['$'] text-zinc-950">
+        <h3 className=" text-center font-bold">{props.title}</h3>
+        <span className=" after:content-['$'] text-red-950 font-bold">
           {props.price}
         </span>
       </Link>
@@ -58,13 +57,10 @@ function ProductCard(props: ProductCardProps) {
   );
 }
 
-function useProducts(search: string): ResponseState {
-  const { data, isLoading } = useSWR(
-    `${API_URL}/products/search?q=${search}`,
-    async (key) => {
-      return fetch(key).then((res) => res.json());
-    }
-  );
+function useProducts(request: string): ResponseState {
+  const { data, isLoading } = useSWR(request, async (key) => {
+    return fetch(key).then((res) => res.json());
+  });
 
   return {
     response: data,
@@ -73,7 +69,7 @@ function useProducts(search: string): ResponseState {
 }
 
 export default function Products(props: productsProps) {
-  const { response, isLoading } = useProducts(props.search);
+  const { response, isLoading } = useProducts(props.request);
   const [products, setProducts] = useState<JSX.Element[]>([]);
   useEffect(() => {
     if (response) {
@@ -91,17 +87,19 @@ export default function Products(props: productsProps) {
 
       setProducts(newProducts);
     }
-  }, [response, props.search]);
+  }, [response, props.request]);
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center flex-grow">
+      <div className="flex justify-center items-start flex-grow">
         <Spinner />
       </div>
     );
   } else {
     return (
-      <div className=" grid grid-cols-2 md:grid-cols-4 gap-5">{products}</div>
+      <div className=" grid grid-cols-2 md:grid-cols-4 gap-5 h-min">
+        {products}
+      </div>
     );
   }
 }

@@ -1,14 +1,13 @@
 "use client";
 import useSWR from "swr";
+import { useEffect } from "react";
 import NavBar from "@/components/NavBar";
 import CartTable from "./CartTable";
 import Spinner from "@/components/Spinner/Spinner";
-import { API_URL } from "@/constants";
-import { Cart } from "./CartTable";
-
-interface Params {
-  id: string;
-}
+import { API_CART } from "@/constants";
+import { Cart } from "@/types";
+import { API_BUY } from "@/constants";
+import { redirect } from "next/navigation";
 
 interface Response {
   cart: Cart;
@@ -16,9 +15,11 @@ interface Response {
 }
 
 function useCartProducts(): Response {
-  const { data, isLoading } = useSWR(`${API_URL}/carts/1`, async (key) => {
+  const { data, isLoading } = useSWR(API_CART, async (key) => {
     return await fetch(key).then((res) => res.json());
   });
+
+  console.log(data, isLoading);
 
   return {
     cart: data,
@@ -26,15 +27,24 @@ function useCartProducts(): Response {
   };
 }
 
+function handleBuy() {
+  fetch(API_BUY);
+
+  redirect("/");
+}
+
 function BuyButton() {
   return (
-    <button className=" p-3 bg bg-yellow-600 rounded-3xl w-full animate-pulse active:bg-yellow-700">
+    <button
+      onClick={handleBuy}
+      className=" p-3 bg bg-yellow-600 rounded-3xl w-full animate-pulse active:bg-yellow-700"
+    >
       Buy
     </button>
   );
 }
 
-export default function Cart({ params }: { params: Params }) {
+export default function Cart() {
   const { cart, isLoading } = useCartProducts();
 
   return (

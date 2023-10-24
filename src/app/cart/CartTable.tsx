@@ -1,41 +1,36 @@
 import React, { useState, useEffect } from "react";
-import useSWR from "swr";
 import Item from "./Item";
-import { API_URL } from "@/constants";
-
-interface Product {
-  id: number;
-  title: string;
-  price: number;
-  quantity: number;
-  total: number;
-}
-
-export interface Cart {
-  id: number;
-  products: Product[];
-  total: number;
-  userID: number;
-  totalProducts: number;
-  totalQuantity: number;
-}
+import { Cart } from "@/types";
+import { API_ADD_TO_CART } from "@/constants";
 
 interface CartTableProps {
   cart: Cart;
 }
 
 export default function CartTable({ cart }: CartTableProps) {
-  const [quantity, setQuantity] = useState<number[]>(
+  const [ProductsQuantities, setProductsQuantities] = useState<number[]>(
     cart.products.map((product) => product.quantity)
   );
 
   const updateQuantity = (
     event: React.ChangeEvent<HTMLInputElement>,
-    index: number
+    index: number,
+    id: number
   ) => {
-    const newQuantity = [...quantity];
-    newQuantity[index] = parseInt(event.target.value);
-    setQuantity(newQuantity);
+    const newQuantity = parseInt(event.target.value);
+
+    const newProductsQuantities = [...ProductsQuantities];
+    newProductsQuantities[index] = newQuantity;
+    setProductsQuantities(newProductsQuantities);
+
+    fetch(API_ADD_TO_CART, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        addQuantity: 1,
+        productId: id,
+      }),
+    }).then((res) => res.json());
   };
 
   return (
@@ -59,9 +54,10 @@ export default function CartTable({ cart }: CartTableProps) {
             <Item
               key={product.id}
               title={product.title}
-              quantity={quantity[index]}
+              quantity={ProductsQuantities[index]}
               price={product.price}
               index={index}
+              productID={product.id}
               updateQuantity={updateQuantity}
             />
           ))}

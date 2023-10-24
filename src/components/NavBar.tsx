@@ -4,6 +4,10 @@ import SearchIcon from "@/assets/search.svg";
 import CartIcon from "@/assets/shopping-cart.svg";
 import Logo from "@/assets/shopping-bag.svg";
 import Link from "next/link";
+import useSWR from "swr";
+import Spinner from "@/components/Spinner/Spinner";
+import { sessionResponse } from "@/app/api/session/route";
+import { API_CHECK_SESSION } from "@/constants";
 
 interface NavBarProps {
   height?: number;
@@ -11,8 +15,20 @@ interface NavBarProps {
   productsInCart?: number;
 }
 
+function useSessionCheck(): sessionResponse & { isLoading: boolean } {
+  const { data, isLoading } = useSWR(API_CHECK_SESSION, async (key) => {
+    return fetch(key).then((res) => res.json());
+  });
+
+  return {
+    session: data,
+    isLoading,
+  };
+}
+
 export default function NavBar({ height = 50, setSearch }: NavBarProps) {
   const componentsHeight = height / 1.5;
+  const { session, isLoading } = useSessionCheck();
 
   return (
     <nav style={{ height: height }} className="bg-red-500 w-full px-2">
@@ -57,21 +73,26 @@ export default function NavBar({ height = 50, setSearch }: NavBarProps) {
           </li>
         ) : null}
         <li>
-          <Link
-            href="/cart/1"
-            className=" relative flex justify-center items-center h-full w-full rounded-xl p-3 hover:bg-red-400"
-          >
-            <h3 className=" hidden lg:block text-lg w-min">Your Cart</h3>
-            <Image src={CartIcon} alt="Cart" width={height} height={height} />
-          </Link>
+          {isLoading ? (
+            <Spinner />
+          ) : session ? (
+            <Link
+              href="/cart"
+              className=" relative flex justify-center items-center h-full w-full rounded-xl p-3 hover:bg-red-400"
+            >
+              <h3 className=" hidden lg:block text-lg w-min">Your Cart</h3>
+              <Image src={CartIcon} alt="Cart" width={height} height={height} />
+            </Link>
+          ) : (
+            <Link
+              href={"/login"}
+              className=" flex justify-center items-center h-full w-full rounded-xl p-3 hover:bg-red-400"
+            >
+              LogIn
+            </Link>
+          )}
         </li>
       </ul>
     </nav>
   );
 }
-
-/*
-<span className=" absolute top-0 right-0 m-auto flex justify-center items-center bg-green-400 rounded-full opacity-80 text-xl w-6 h-6">
-  {productsInCart}
-</span> 
-*/

@@ -1,10 +1,14 @@
 "use client";
+import { useState } from "react";
 import useSWR from "swr";
 import NavBar from "@/components/NavBar";
 import Spinner from "@/components/Spinner/Spinner";
+import Messsage from "@/components/Message";
+import { MessageInfo } from "@/types";
 import Image from "next/image";
-import { API_URL } from "@/constants";
+import { API_ADD_TO_CART, API_PRODUCTS } from "@/constants";
 import Link from "next/link";
+import { json } from "stream/consumers";
 
 interface Product {
   id: number;
@@ -15,23 +19,48 @@ interface Product {
   thumbnail: string;
 }
 
-interface Response {
+interface ResponseState {
   product: Product;
   isLoading: boolean;
 }
 
-function useProduct(id: string): Response {
-  const { data, isLoading } = useSWR(
-    `${API_URL}/products/${id}`,
-    async (key) => {
-      return fetch(key).then((res) => res.json());
-    }
-  );
+function useProduct(id: string): ResponseState {
+  const { data, isLoading } = useSWR(`${API_PRODUCTS}/${id}`, async (key) => {
+    return fetch(key).then((res) => res.json());
+  });
 
   return {
     product: data,
     isLoading,
   };
+}
+
+async function handleAddToCart(
+  id: string,
+  setMessage: React.Dispatch<React.SetStateAction<MessageInfo | null>>
+) {
+  console.log(id);
+
+  const API_Response: Response = await fetch(API_ADD_TO_CART, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      addQuantity: 1,
+      productId: id,
+    }),
+  }).then((res) => res.json());
+
+  if (API_Response.status === 200) {
+    setMessage({
+      type: "success",
+      message: "Product added to cart",
+    });
+  } else {
+    setMessage({
+      type: "error",
+      message: "Something went wrong",
+    });
+  }
 }
 
 export default function ProductView({
@@ -40,10 +69,12 @@ export default function ProductView({
   params: { id: string };
 }) {
   const { product, isLoading } = useProduct(params.id);
+  const [message, setMessage] = useState<MessageInfo | null>(null);
 
   return (
     <>
       <NavBar />
+      {message && <Messsage {...message} setMessage={setMessage} />}
       <div className=" flex flex-col items-center mt-5 w-full h-screen">
         {isLoading ? (
           <Spinner />
@@ -60,7 +91,10 @@ export default function ProductView({
                 <span className=" after:content-['$'] bg-white h-full rounded-y-3xl rounded-l-3xl p-1">
                   {product.price}
                 </span>
-                <button className=" bg-green-500 hover:bg-green-400 transition-colors h-full rounded-y-3xl rounded-r-3xl p-1 whitespace-nowrap uppercase">
+                <button
+                  onClick={() => handleAddToCart(params.id, setMessage)}
+                  className=" bg-green-500 hover:bg-green-400 transition-colors h-full rounded-y-3xl rounded-r-3xl p-1 whitespace-nowrap uppercase"
+                >
                   Add to cart
                 </button>
               </div>

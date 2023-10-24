@@ -3,9 +3,11 @@ interface ItemProps {
   quantity: number;
   price: number;
   index: number;
+  productID: number;
   updateQuantity: (
     event: React.ChangeEvent<HTMLInputElement>,
-    index: number
+    index: number,
+    id: number
   ) => void;
 }
 
@@ -14,10 +16,11 @@ export default function Item({
   quantity,
   price,
   index,
+  productID,
   updateQuantity,
 }: ItemProps) {
   const handleQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    updateQuantity(event, index);
+    updateQuantity(event, index, productID);
   };
 
   return (
