@@ -33,20 +33,18 @@ function Category(props: {
 export default function Aside(props: asideProps) {
   const categoriesList = props.categories
     ? props.categories.map((category) => (
-        <Category
-          key={category}
-          category={category}
-          setRequest={props.setRequest}
-          setMenuIsOpen={props.setMenuIsOpen}
-        />
-      ))
+      <Category
+        key={category}
+        category={category}
+        setRequest={props.setRequest}
+        setMenuIsOpen={props.setMenuIsOpen}
+      />
+    ))
     : null;
 
   return (
     <div
-      className={` fixed overflow-scroll top-0 left-0 m-auto md:m-0 z-50 h-screen w-[150px] md:static bg-red-500 md:flex md:basis-[150px] md:grow-1 md:shrink-0 items-center flex-col md:h-min rounded-xl border-4 border-red-950 transition-transform origin-left ${
-        props.menuIsOpen ? "scale-100" : "scale-0 md:scale-100"
-      }`}
+      className={` fixed overflow-hidden top-0 left-0 m-auto md:m-0 z-50 h-screen w-[150px] md:static bg-red-500 md:flex md:basis-[150px] md:grow-1 md:shrink-0 items-center flex-col md:h-min rounded-xl border-4 border-red-950 transition-transform origin-left ${props.menuIsOpen ? "scale-100" : "scale-0 md:scale-100"}`}
     >
       <button
         onClick={() => {

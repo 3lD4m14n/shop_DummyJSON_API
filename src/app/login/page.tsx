@@ -11,7 +11,6 @@ export default function LoginPage() {
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log("login");
 
     let { message } = await fetch(API_AUTH, {
       method: "POST",

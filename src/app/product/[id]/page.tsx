@@ -40,8 +40,6 @@ async function handleAddToCart(
   setMessage: React.Dispatch<React.SetStateAction<MessageInfo | null>>,
   push: (url: string) => void
 ) {
-  console.log(id);
-
   const API_Response: Response = await fetch(API_ADD_TO_CART, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

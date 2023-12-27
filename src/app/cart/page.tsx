@@ -19,8 +19,6 @@ function useCartProducts(): Response {
     return await fetch(key).then((res) => res.json());
   });
 
-  console.log(data, isLoading);
-
   return {
     cart: data,
     isLoading: isLoading,
