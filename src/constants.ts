@@ -1,8 +1,8 @@
 export const API_URL = "/api";
 
 export const API_CATEGORIES = `${API_URL}/categories`;
-export const API_PRODUCTS = `${API_URL}/products`;
-export const API_SEARCH_PRODUCTS = `${API_URL}/products/search`;
+export const API_PRODUCTS = `${API_URL}/products/page`;
+export const API_SEARCH_PRODUCTS = `${API_URL}/products/page/search`;
 export const API_PRODUCTS_BY_CATEGORY = `${API_URL}/products/category`;
 export const API_CART = `${API_URL}/cart`;
 export const API_ADD_TO_CART = `${API_CART}/add`;
@@ -24,3 +24,4 @@ export const SESION_DURATION = 1000 * 60 * 60 * 24 * 7; // 7 days
 export const SESION_DURATION_MINUTES = 60 * 24 * 7; // 7 days
 
 export const COOKIE_NAME = "DUMMY_JSON_SHOP_TOKEN";
+export const LIMIT_PRODUCTS_PER_PAGE = 20;

@@ -1,10 +1,10 @@
 "use client";
-import useSWR from "swr";
-import { useState, useEffect } from "react";
-import NavBar from "@/components/NavBar";
 import Aside from "@/components/Aside";
-import { API_PRODUCTS, API_SEARCH_PRODUCTS, API_CATEGORIES } from "@/constants";
+import NavBar from "@/components/NavBar";
 import Products from "@/components/Products";
+import { API_CATEGORIES, API_PRODUCTS, API_SEARCH_PRODUCTS, LIMIT_PRODUCTS_PER_PAGE } from "@/constants";
+import { useEffect, useState } from "react";
+import useSWR from "swr";
 
 interface Response {
   categories: string[];
@@ -27,22 +27,23 @@ export default function Home() {
   const [search, setSearch] = useState<string>("");
   const [request, setRequest] = useState<string>("");
   const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   useEffect(() => {
     if (search) {
-      setRequest(`${API_SEARCH_PRODUCTS}/${search}`);
+      setRequest(`${API_SEARCH_PRODUCTS}/${currentPage}/${search}`);
     } else {
-      setRequest(API_PRODUCTS);
+      setRequest(`${API_PRODUCTS}/${currentPage}`);
     }
-  }, [search]);
+  }, [search, currentPage]);
 
   return (
     <>
       <div
         onClick={() => setMenuIsOpen(false)}
-        className={` ${
-          menuIsOpen ? "opacity-50 z-30" : "opacity-0 -z-30"
-        } fixed h-screen w-screen bg-red-950 blur-md transition-opacity`}
+        className={` ${menuIsOpen ? "opacity-50 z-30" : "opacity-0 -z-30"
+          } fixed h-screen w-screen bg-red-950 blur-md transition-opacity`}
       ></div>
       <NavBar setSearch={setSearch} setMenuIsOpen={setMenuIsOpen} />
       <div className=" flex mt-5 ml-3 gap-5 p-5">
@@ -53,7 +54,13 @@ export default function Home() {
           menuIsOpen={menuIsOpen}
           setMenuIsOpen={setMenuIsOpen}
         />
-        <Products request={request} />
+        <Products
+          request={request}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          setCurrentPage={setCurrentPage}
+          setTotalPages={setTotalPages}
+        />
       </div>
     </>
   );

@@ -1,11 +1,18 @@
+import 'react-responsive-pagination/themes/classic.css';
 import useSWR from "swr";
 import { useEffect, useState } from "react";
+import ResponsivePagination from "react-responsive-pagination";
 import Link from "next/link";
 import Image from "next/image";
 import Spinner from "./Spinner/Spinner";
+import { LIMIT_PRODUCTS_PER_PAGE } from "@/constants";
 
 interface productsProps {
   request: string;
+  currentPage: number;
+  setCurrentPage: (number: number) => void;
+  totalPages: number;
+  setTotalPages: (number: number) => void;
 }
 
 interface SearchResponse {
@@ -68,6 +75,10 @@ function useProducts(request: string): ResponseState {
   };
 }
 
+function handlePageChange(page: number, setCurrentPage: (number: number) => void) {
+  setCurrentPage(page);
+}
+
 export default function Products(props: productsProps) {
   const { response, isLoading } = useProducts(props.request);
   const [products, setProducts] = useState<JSX.Element[]>([]);
@@ -84,10 +95,10 @@ export default function Products(props: productsProps) {
           />
         );
       });
-
+      props.setTotalPages(Math.floor(response.total / LIMIT_PRODUCTS_PER_PAGE));
       setProducts(newProducts);
     }
-  }, [response, props.request]);
+  }, [response, props]);
 
   if (isLoading) {
     return (
@@ -97,8 +108,20 @@ export default function Products(props: productsProps) {
     );
   } else {
     return (
-      <div className=" grid grid-cols-2 md:grid-cols-4 gap-5 h-min">
-        {products}
+      <div>
+        {products.length >= 1 && (<ResponsivePagination
+          total={props.totalPages}
+          current={props.currentPage}
+          onPageChange={page => handlePageChange(page, props.setCurrentPage)}
+        />)}
+        <div className=" grid grid-cols-2 md:grid-cols-4 gap-5 h-min">
+          {products}
+        </div>
+        {products.length >= 1 && (<ResponsivePagination
+          total={props.totalPages}
+          current={props.currentPage}
+          onPageChange={page => handlePageChange(page, props.setCurrentPage)}
+        />)}
       </div>
     );
   }

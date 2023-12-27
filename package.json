@@ -13,6 +13,7 @@
     "next": "^13.5.4",
     "react": "latest",
     "react-dom": "latest",
+    "react-responsive-pagination": "^2.4.0",
     "swr": "^2.2.4"
   },
   "devDependencies": {
