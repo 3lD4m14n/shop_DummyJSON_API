@@ -2,6 +2,7 @@ export const API_URL = "/api";
 
 export const API_CATEGORIES = `${API_URL}/categories`;
 export const API_PRODUCTS = `${API_URL}/products/page`;
+export const API_SINGLE_PRODUCT = `${API_URL}/products`;
 export const API_SEARCH_PRODUCTS = `${API_URL}/products/page/search`;
 export const API_PRODUCTS_BY_CATEGORY = `${API_URL}/products/category`;
 export const API_CART = `${API_URL}/cart`;

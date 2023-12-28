@@ -6,7 +6,7 @@ import Spinner from "@/components/Spinner/Spinner";
 import Messsage from "@/components/Message";
 import { MessageInfo } from "@/types";
 import Image from "next/image";
-import { API_ADD_TO_CART, API_PRODUCTS } from "@/constants";
+import { API_ADD_TO_CART, API_SINGLE_PRODUCT } from "@/constants";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -25,10 +25,10 @@ interface ResponseState {
 }
 
 function useProduct(id: string): ResponseState {
-  const { data, isLoading } = useSWR(`${API_PRODUCTS}/${id}`, async (key) => {
+  const { data, isLoading } = useSWR(`${API_SINGLE_PRODUCT}/${id}`, async (key) => {
     return fetch(key).then((res) => res.json());
   });
-
+  console.log(data)
   return {
     product: data,
     isLoading,

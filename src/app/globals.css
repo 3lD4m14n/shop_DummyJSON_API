@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 :root {
---pagination-active-bg: #EF4444
+  --pagination-active-bg: #EF4444
 }
